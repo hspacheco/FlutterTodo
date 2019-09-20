@@ -41,11 +41,11 @@ class ListItem extends StatelessWidget {
                   <PopupMenuEntry<Action>>[
                 const PopupMenuItem<Action>(
                   value: Action.edit,
-                  child: Text('Editar'),
+                  child: ListTile(leading: Icon(Icons.edit), title: Text('Editar')),
                 ),
                 const PopupMenuItem<Action>(
                   value: Action.delete,
-                  child: Text('Apagar'),
+                  child: ListTile(leading: Icon(Icons.delete), title: Text('Apagar')),
                 ),
               ],
             )
