@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-enum Action { edit, delete }
+import 'package:todo/ListItem.dart';
 
 void main() => runApp(MyApp());
 
@@ -66,49 +65,12 @@ class _MyHomePageState extends State<MyHomePage>
           padding: const EdgeInsets.all(8),
           itemCount: list.length,
           itemBuilder: (BuildContext context, int index) {
-            return Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(
-                    child: Row(
-                      children: <Widget>[
-                        Checkbox(
-                            value: list[index].status,
-                            onChanged: (bool val) {
-                              if (val) {
-                                _addDoneItem(index, val);
-                              }
-                            }),
-                        Text(
-                          '${list[index].title}',
-                          style: list[index].status
-                              ? TextStyle(
-                                  decoration: TextDecoration.lineThrough,
-                                  color: Colors.grey,
-                                )
-                              : null,
-                        ),
-                      ],
-                    ),
-                    margin: EdgeInsets.only(right: 6),
-                  ),
-                  PopupMenuButton<Action>(
-                    onSelected: (Action result) {},
-                    itemBuilder: (BuildContext context) =>
-                        <PopupMenuEntry<Action>>[
-                      const PopupMenuItem<Action>(
-                        value: Action.edit,
-                        child: Text('Editar'),
-                      ),
-                      const PopupMenuItem<Action>(
-                        value: Action.delete,
-                        child: Text('Apagar'),
-                      ),
-                    ],
-                  )
-                ],
-              ),
+            return ListItem(
+              status: list[index].status,
+              title: list[index].title,
+              onChanged: (val) {
+                _addDoneItem(index, val);
+              },
             );
           },
           separatorBuilder: (BuildContext context, int index) =>
