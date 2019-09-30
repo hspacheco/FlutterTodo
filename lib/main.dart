@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo/ListItem.dart';
+import 'package:todo/ListItem.dart' as prefix0;
 
 void main() => runApp(MyApp());
 
@@ -19,8 +20,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
-
-  
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -52,6 +51,18 @@ class _MyHomePageState extends State<MyHomePage>
     });
   }
 
+  void _removeTodoItem(int index) {
+    setState(() {
+      _items.removeRange(index, index + 1);
+    });
+  }
+
+  void _editTodoName(int index, String title) {
+     setState(() {
+      _items[index].title = title;
+    });
+  }
+
   void _addDoneItem(int index, bool status) {
     setState(() {
       var item = _items[index];
@@ -70,8 +81,16 @@ class _MyHomePageState extends State<MyHomePage>
             return ListItem(
               status: list[index].status,
               title: list[index].title,
+              onEdit: () {
+                _openDialog(context, index);
+              },
+              onDelete: () {
+                _removeTodoItem(index);
+              },
               onChanged: (val) {
-                _addDoneItem(index, val);
+                if (val) {
+                  _addDoneItem(index, val);
+                }
               },
             );
           },
@@ -80,12 +99,28 @@ class _MyHomePageState extends State<MyHomePage>
     ));
   }
 
-  Future<void> _openDialog(BuildContext context) async {
+  Future<void> _openDialog(BuildContext context, [int itemIndex]) async {
+
+    void addItem() {
+      var item = TodoItem(title: textController.text);
+      _addTodoItem(item);
+    }
+
+    void editItem(int index) {
+      _editTodoName(index, textController.text);
+    }
+
+    var isEditDialog = itemIndex != null;
+
+    if (isEditDialog) {
+      textController.text = _items[itemIndex].title;
+    }
+
     await showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
-            title: Text('Nova Tarefa'),
+            title: isEditDialog ? Text('Editar Tarefa') : Text('Nova Tarefa'),
             children: <Widget>[
               SimpleDialogOption(
                 child: TextField(
@@ -94,16 +129,20 @@ class _MyHomePageState extends State<MyHomePage>
                   onChanged: (String val) {},
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: 'Adicionar Tarefa',
+                    hintText: isEditDialog ? 'Editar Tarefa' : 'Adicionar Tarefa',
                   ),
                 ),
               ),
               SimpleDialogOption(
                 child: FlatButton(
-                  child: Text('Adicionar'),
+                  child: isEditDialog ? Text('Salvar') : Text('Adicionar'),
                   onPressed: () {
-                    var item = TodoItem(title: textController.text);
-                    _addTodoItem(item);
+                    if (itemIndex != null) {
+                      editItem(itemIndex);
+                    } else {
+                      addItem();
+                    }
+
                     textController.clear();
                     Navigator.of(context).pop();
                   },
